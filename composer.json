@@ -1,0 +1,21 @@
+{
+  "name": "nathansalter/decision-pipeline",
+  "description": "Simple Middleware-type method of making decisions",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "DecisionPipeline\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "DecisionPipeline\\": "test/"
+    }
+  },
+  "require": {
+    "php": "^5.5 || ^7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8"
+  }
+}
