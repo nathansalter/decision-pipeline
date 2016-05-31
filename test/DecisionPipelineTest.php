@@ -4,6 +4,7 @@ use DecisionPipeline\Decision;
 use DecisionPipeline\DecisionPipeline;
 use DecisionPipeline\ExampleDecider;
 use DecisionPipeline\NoDecision;
+use DecisionPipeline\PipelineDecider;
 use DecisionPipeline\Question;
 
 class DecisionPipelineTest extends PHPUnit_Framework_TestCase
@@ -93,8 +94,21 @@ class DecisionPipelineTest extends PHPUnit_Framework_TestCase
 
     public function testPipelineCanDecideWithClasses()
     {
-        $decider = new ExampleDecider();
-        $this->setExpectedException(\RuntimeException::class, ExampleDecider::EXAMPLE_ERROR);
+        $expectedError = 'This is not a deciding class';
+        $decider = new class($expectedError) implements PipelineDecider
+        {
+            private $expectedError;
+            public function __construct($expectedError)
+            {
+                $this->expectedError = $expectedError;
+            }
+
+            public function decide(Question $question, Decision $decision, callable $next = null)
+            {
+                throw new \RuntimeException($this->expectedError);
+            }
+        };
+        $this->setExpectedException(\RuntimeException::class, $expectedError);
         $errorPipeline = new DecisionPipeline([$decider]);
         $errorPipeline->decide($this->getMock(Question::class));
     }
