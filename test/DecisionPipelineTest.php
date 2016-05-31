@@ -9,8 +9,6 @@ use DecisionPipeline\Question;
 
 class DecisionPipelineTest extends PHPUnit_Framework_TestCase
 {
-
-
     public function testEmptyPipelineDecidesNoDecision()
     {
         $emptyPipeline = new DecisionPipeline([]);
@@ -62,11 +60,11 @@ class DecisionPipelineTest extends PHPUnit_Framework_TestCase
         $decidingPipeline = new DecisionPipeline([
             function(Question $question, Decision $decision, callable $next = null) use ($unexpectedQuestion, $expectedQuestion) {
                 $this->assertSame($unexpectedQuestion, $question);
-                $next($expectedQuestion, $decision);
+                return $next($expectedQuestion, $decision);
             },
             function(Question $question, Decision $decision, callable $next = null) use ($expectedQuestion) {
                 $this->assertSame($expectedQuestion, $question);
-                $next($question, $decision);
+                return $next($question, $decision);
             }
         ]);
         $decidingPipeline->decide($unexpectedQuestion);
@@ -103,7 +101,7 @@ class DecisionPipelineTest extends PHPUnit_Framework_TestCase
                 $this->expectedError = $expectedError;
             }
 
-            public function decide(Question $question, Decision $decision, callable $next = null)
+            public function decide(Question $question, Decision $decision, callable $next = null) : Decision
             {
                 throw new \RuntimeException($this->expectedError);
             }

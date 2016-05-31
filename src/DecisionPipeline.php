@@ -34,7 +34,7 @@ class DecisionPipeline implements Pipeline
      * @param Question $question
      * @return Decision
      */
-    public function decide(Question $question)
+    public function decide(Question $question) : Decision
     {
         $pipeline = $this->pipeline;
         $defaultDecider = function(Question $question, Decision $decision) {
@@ -50,6 +50,9 @@ class DecisionPipeline implements Pipeline
                 return $nextDecider->decide($question, $decision, $nextDecision);
             } elseif(is_callable($nextDecider)) {
                 return $nextDecider($question, $decision, $nextDecision);
+            } else {
+                // This should never happen because of the validation in the constructor
+                throw new \RuntimeException(sprintf('Invalid decider (%s) attempted to be handled by Decision Pipeline', gettype($nextDecider)));
             }
         };
         return $nextDecision($question, $this->defaultDecision, $nextDecision);
